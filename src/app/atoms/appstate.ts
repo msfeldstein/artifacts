@@ -6,4 +6,9 @@ export const lastErrorAtom = atom<string | null>(null);
 
 export const currentSketchAtom = atom<string>(defaultScript);
 export const sketchesAtom = atom<string[]>([]);
-export const explorationInfoAtom = atom<string[]>([]);
+
+export type ExplorationInfo = {
+  title: string;
+  description: string;
+};
+export const explorationInfoAtom = atom<ExplorationInfo[]>([]);

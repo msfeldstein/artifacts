@@ -1,3 +1,7 @@
+:root {
+  --right-width: 632px;
+}
+
 body,
 html {
   margin: 0;
@@ -15,13 +19,17 @@ html {
 }
 
 .EditorContainer {
-  width: calc(100% - 650px);
+  width: calc(100% - var(--right-width));
+  height: 100%;
+}
+
+#controls {
+  overflow: scroll;
   height: 100%;
 }
 
 .PreviewContainer {
-  width: 650px;
-  border-left: 1px solid black;
+  width: var(--right-width);
 }
 
 .ExplorationsContainer {
@@ -49,10 +57,8 @@ html {
 }
 
 iframe {
-  margin: auto;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  border: 0px solid white;
+  margin: 16px;
+  border: 0;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 

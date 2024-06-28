@@ -21,7 +21,7 @@ import query from "./atoms/query";
 const placeholder = `What would you like to do to the sketch?`;
 
 export default function Home() {
-  const [loading, setLoading] = useAtom(loadingAtom);
+  const loading = useAtomValue(loadingAtom);
   const [lastError, setLastError] = useAtom(lastErrorAtom);
   const [currentSketch, setCurrentSketch] = useAtom(currentSketchAtom);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -29,6 +29,7 @@ export default function Home() {
   const sketches = useAtomValue(sketchesAtom);
   const infos = useAtomValue(explorationInfoAtom);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  console.log(infos, sketches);
 
   function handleEditorDidMount(
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -74,6 +75,7 @@ export default function Home() {
 
   useEffect(() => {
     const onMessage = function (msg: MessageEvent) {
+      console.log("Got error", msg);
       if (msg.data.p5Error) {
         setLastError(msg.data.p5Error);
       }
@@ -133,6 +135,8 @@ export default function Home() {
               minimap: { enabled: false },
               automaticLayout: true,
               language: "javascript",
+              hideCursorInOverviewRuler: true,
+              overviewRulerBorder: false,
             }}
           />
         </div>
@@ -158,14 +162,15 @@ export default function Home() {
             ></iframe>
 
             <div className="ExplorationsContainer">
-              {sketches.map((sketch, i) => {
+              {infos.map((info, i) => {
                 return (
                   <div key={`frame${i}`} onClick={() => choose(i)}>
-                    <div className="ExplorationInfo">{infos[i]}</div>
+                    <div className="ExplorationInfo">{info.title}</div>
                     <div className="iframeContainer">
                       <iframe
                         src={
-                          "/viewer.html?sketch=" + encodeURIComponent(sketch)
+                          "/viewer.html?sketch=" +
+                          encodeURIComponent(sketches[i])
                         }
                         width={600}
                         height={600}
