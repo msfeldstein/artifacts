@@ -8,7 +8,7 @@ import {
   sketchesAtom,
 } from "./appstate";
 import { preludeExplore } from "../util/sketches";
-import generate from "../util/ai";
+import generate, { generateStructuredCode } from "../util/ai";
 
 const store = getDefaultStore();
 
@@ -21,9 +21,9 @@ const fetchExploration = async (
   Please rewrite it using this new idea: ${newIdea.title}: ${newIdea.description}
   
   ${existingSketch}`;
-  console.log("Prompt", prompt);
 
-  let sketch = await generate(prompt);
+  let sketch = await generateStructuredCode(prompt);
+  console.info("Result of exploration", sketch);
   sketch = sketch.replaceAll("```javascript", "").replaceAll("```", "");
   return sketch;
 };
@@ -39,7 +39,7 @@ export default async function explore(existingSketch: string) {
     
     ${existingSketch}`
   );
-  console.log("Got explorations", explorations);
+  console.info("Got explorations", explorations);
   newInfos = explorations
     .split("\n")
     .filter((s) => s.length > 0)
@@ -53,9 +53,9 @@ export default async function explore(existingSketch: string) {
   store.set(explorationInfoAtom, newInfos);
 
   for (var i = 0; i < 3; i++) {
-    console.log("Querying", i);
     // @ts-ignore
     let sketch = await fetchExploration(existingSketch, newInfos[i]);
+    console.info("Received exploration code", sketch);
     newSketches.push(sketch);
     store.set(sketchesAtom, newSketches);
   }
