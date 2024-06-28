@@ -53,7 +53,6 @@ export default async function explore(existingSketch: string) {
   store.set(explorationInfoAtom, newInfos);
 
   for (var i = 0; i < 3; i++) {
-    // @ts-ignore
     let sketch = await fetchExploration(existingSketch, newInfos[i]);
     console.info("Received exploration code", sketch);
     newSketches.push(sketch);
