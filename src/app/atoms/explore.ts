@@ -7,7 +7,6 @@ import {
   loadingAtom,
   sketchesAtom,
 } from "./appstate";
-import { preludeExplore } from "../util/sketches";
 import generate, { generateStructuredCode } from "../util/ai";
 
 const store = getDefaultStore();

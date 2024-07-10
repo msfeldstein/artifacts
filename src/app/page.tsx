@@ -1,6 +1,5 @@
 "use client";
-import Image from "next/image";
-import styles from "./page.module.css";
+
 import Communing from "./components/communing";
 import { useAtom, useAtomValue } from "jotai";
 import {
@@ -11,14 +10,14 @@ import {
   sketchesAtom,
 } from "./atoms/appstate";
 import Head from "next/head";
-import monaco from "monaco-editor";
-import { Editor, Monaco } from "@monaco-editor/react";
 import { useCallback, useEffect, useRef } from "react";
 
 import explore from "./atoms/explore";
 import query from "./atoms/query";
 import MobileBanner from "./components/mobile-header";
 import P5Editor from "./components/editor";
+import ExplorationContainer from "./components/exploration-container";
+import ActionButtons from "./components/action-buttons";
 
 const placeholder = `What would you like to do to the sketch?`;
 
@@ -28,10 +27,8 @@ export default function Home() {
   const [currentSketch, setCurrentSketch] = useAtom(currentSketchAtom);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const sketches = useAtomValue(sketchesAtom);
-  const infos = useAtomValue(explorationInfoAtom);
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  console.log(infos, sketches);
 
   const play = useCallback(() => {
     if (iframeRef.current) {
@@ -61,8 +58,8 @@ export default function Home() {
 
   useEffect(() => {
     const onMessage = function (msg: MessageEvent) {
+      console.log("Got error", msg);
       if (msg.data.p5Error) {
-        console.log("Got error", msg);
         setLastError(msg.data.p5Error);
       }
     };
@@ -71,13 +68,6 @@ export default function Home() {
       window.removeEventListener("message", onMessage);
     };
   });
-
-  const choose = useCallback(
-    (i: number) => {
-      setCurrentSketch(sketches[i]);
-    },
-    [play, sketches]
-  );
 
   return (
     <>
@@ -90,42 +80,14 @@ export default function Home() {
 
         <P5Editor />
         <div id="controls">
-          <div id="button-row">
-            <button disabled={loading} className="button" onClick={play}>
-              Play
-            </button>
-            <button
-              disabled={loading}
-              className="button"
-              onClick={(e) => explore(currentSketch)}
-            >
-              Explore
-            </button>
-          </div>
           <iframe
             title="preview"
             ref={iframeRef}
             width={600}
             height={600}
           ></iframe>
-          <div className="ExplorationsContainer">
-            {infos.map((info, i) => {
-              return (
-                <div key={`frame${i}`} onClick={() => choose(i)}>
-                  <div className="ExplorationInfo">{info.title}</div>
-                  <div className="iframeContainer">
-                    <iframe
-                      src={
-                        "/viewer.html?sketch=" + encodeURIComponent(sketches[i])
-                      }
-                      width={600}
-                      height={600}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {loading && <Communing />}
+          <ExplorationContainer />
 
           <div className="PromptContainer">
             <textarea
@@ -134,7 +96,9 @@ export default function Home() {
               ref={textareaRef}
               onKeyDown={onKeyDown}
               placeholder={placeholder}
+              onClick={(e) => e.currentTarget.select()}
             ></textarea>
+            <ActionButtons />
           </div>
           {lastError && (
             <div className="ErrorBox">
@@ -146,8 +110,6 @@ export default function Home() {
               </div>
             </div>
           )}
-          {loading && <Communing />}
-          {loading && <div>Communing...</div>}
         </div>
       </div>
     </>

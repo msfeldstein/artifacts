@@ -40,12 +40,14 @@ html {
 }
 
 .ExplorationsContainer {
+  padding-top: 16px;
   display: flex;
   flex-direction: row;
-  font-size: 10px;
+  font-size: 16px;
   justify-content: flex-end;
   align-content: flex-end;
   align-items: flex-end;
+  text-align: left;
 }
 
 .ExplorationsContainer > div {
@@ -71,6 +73,13 @@ iframe {
   background-color: white;
   border-top: 1px solid black;
   flex-grow: 1;
+  position: relative;
+}
+
+#floating-action-buttons {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
 }
 
 .PromptContainer textarea {
@@ -83,6 +92,7 @@ iframe {
   resize: none;
   outline: 0;
   height: 100%;
+  box-sizing: border-box;
 }
 
 .monaco-editor {
@@ -104,10 +114,6 @@ iframe {
 }
 
 #Communing {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: red;
 }
 
 .ErrorBox {

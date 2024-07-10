@@ -6,7 +6,6 @@ import { useAtom } from "jotai";
 import { useRef } from "react";
 
 export default function P5Editor() {
-  const ref = useRef<HTMLDivElement>(null);
   const [currentSketch, setCurrentSketch] = useAtom(currentSketchAtom);
 
   function handleEditorDidMount(
@@ -24,7 +23,7 @@ export default function P5Editor() {
   }
 
   return (
-    <div className="EditorContainer" ref={ref}>
+    <div className="EditorContainer">
       <Editor
         value={currentSketch}
         onChange={(v) => {
@@ -35,7 +34,6 @@ export default function P5Editor() {
         defaultLanguage="javascript"
         options={{
           minimap: { enabled: false },
-          // automaticLayout: true,
           language: "javascript",
           hideCursorInOverviewRuler: true,
           overviewRulerBorder: false,

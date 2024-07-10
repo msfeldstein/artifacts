@@ -25,7 +25,8 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.js"
     ></script>
     <script>
-      window.onerror = (msg, url, line) => {
+      window.onerror = function (msg, url, line) {
+        console.log("On error", msg);
         window.parent.postMessage({ p5Error: msg, line });
       };
     </script>
