@@ -33,7 +33,7 @@ export default function Home() {
   const play = useCallback(() => {
     if (iframeRef.current) {
       iframeRef.current.src =
-        "/viewer.html?sketch=" + encodeURIComponent(currentSketch);
+        "/viewer.html?components=" + encodeURIComponent(currentSketch);
     }
     setLastError(null);
   }, [setLastError, currentSketch]);
@@ -58,7 +58,7 @@ export default function Home() {
 
   useEffect(() => {
     const onMessage = function (msg: MessageEvent) {
-      console.log("Got error", msg);
+      // console.log("Got error", msg);
       if (msg.data.p5Error) {
         setLastError(msg.data.p5Error);
       }

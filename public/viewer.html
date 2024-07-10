@@ -1,48 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <style>
-      body,
-      html {
-        margin: 0;
-        overflow: hidden;
-      }
-    </style>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"
-      integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script
-      language="javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.js"
-    ></script>
-    <script>
-      window.onerror = function (msg, url, line) {
-        console.log("On error", msg);
-        window.parent.postMessage({ p5Error: msg, line });
-      };
-    </script>
-
-    <title>P5AI Viewer</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic React Component Renderer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
-    <main></main>
+    <div id="root"></div>
+    <script type="text/babel">
+      // Function to get query parameters
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+
+      // Function to safely decode URI component
+      function safeDecodeURIComponent(str) {
+        try {
+          return decodeURIComponent(str);
+        } catch (e) {
+          console.warn("Failed to decode:", str);
+          return str;
+        }
+      }
+
+      // Get the component definitions from the query parameter
+      const componentDefinitions = getQueryParam("components");
+
+      if (componentDefinitions) {
+        try {
+          // Safely decode the component definitions
+          const decodedDefinitions =
+            safeDecodeURIComponent(componentDefinitions);
+
+          // Use Babel to transform the component definitions
+          const transformedCode = Babel.transform(
+            `
+                    ${decodedDefinitions}
+                    ReactDOM.render(
+                        <React.StrictMode>
+                            <App />
+                        </React.StrictMode>,
+                        document.getElementById('root')
+                    );
+                    `,
+            { presets: ["react"] }
+          ).code;
+
+          // Evaluate the transformed code
+          eval(transformedCode);
+        } catch (error) {
+          console.error("Error rendering components:", error);
+          document.getElementById(
+            "root"
+          ).innerHTML = `<p>Error rendering components: ${error.message}</p>`;
+        }
+      } else {
+        document.getElementById("root").innerHTML =
+          "<p>No component definitions provided in the query parameter.</p>";
+      }
+    </script>
   </body>
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const sketch = urlParams.get("sketch");
-    if (sketch) {
-      const script = document.createElement("script");
-      script.textContent = sketch;
-      document.body.appendChild(script);
-    }
-  </script>
 </html>

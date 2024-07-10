@@ -10,9 +10,13 @@ export default function ActionButtons() {
       <button
         disabled={loading}
         className="button"
-        onClick={(e) => explore(currentSketch)}
+        onClick={(e) =>
+          window.open(
+            "/viewer.html?components=" + encodeURIComponent(currentSketch)
+          )
+        }
       >
-        Create Explorations
+        Pop Out
       </button>
     </div>
   );

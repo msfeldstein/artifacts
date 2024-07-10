@@ -1,8 +1,13 @@
 "use client";
 import { getDefaultStore } from "jotai";
-import { currentSketchAtom, loadingAtom } from "./appstate";
+import {
+  currentSketchAtom,
+  lastUpdatedCharacter,
+  loadingAtom,
+} from "./appstate";
 import { preludeGenerate } from "../util/sketches";
-import generate from "../util/ai";
+import generate, { stream } from "../util/ai";
+import { readStreamableValue } from "ai/rsc";
 
 const store = getDefaultStore();
 
@@ -11,10 +16,22 @@ export default async function query(currentSketch: string, query: string) {
 
   const prompt =
     preludeGenerate + "[BEGIN]\n" + currentSketch + "\n[END]\n\n" + query;
-  console.log("About to do it");
-  const text = await generate(prompt);
-  const result = text.replaceAll("[BEGIN]", "").replaceAll("[END]", "").trim();
-  store.set(currentSketchAtom, result);
+  const streamResp = await stream(prompt);
+  console.log({ streamResp });
+  let stringBuilder = "";
+  let newSketch = currentSketch;
+  for await (let data of readStreamableValue(streamResp.output)) {
+    stringBuilder = stringBuilder + data;
+    const result = stringBuilder
+      .replaceAll("[BEGIN]", "")
+      .replaceAll("[END]", "")
+      .trim();
+    newSketch = result + newSketch.substring(result.length);
+    store.set(lastUpdatedCharacter, result.length);
+    store.set(currentSketchAtom, newSketch);
+  }
+
+  // store.set(currentSketchAtom, result);
+  store.set(lastUpdatedCharacter, null);
   store.set(loadingAtom, false);
-  console.log("Got result", result);
 }
