@@ -18,8 +18,7 @@ import MobileBanner from "./components/mobile-header";
 import P5Editor from "./components/editor";
 import ExplorationContainer from "./components/exploration-container";
 import ActionButtons from "./components/action-buttons";
-
-const placeholder = `What would you like to do to the sketch?`;
+import { placeholder } from "./util/sketches";
 
 export default function Home() {
   const loading = useAtomValue(loadingAtom);

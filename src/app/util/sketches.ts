@@ -14,13 +14,12 @@ export const defaultScript = `const App = () => (
   </div>
 );`;
 
-export const placeholder = `What would you like to do to the sketch?
+export const placeholder = `What would you like to generate?
 
 Examples:
-- Make the circle blue
-- Add a bunch of particles that orbit around the circle
-- Add comments to the code
-- Pull all the export constant numbers out to named variables so I can tweak them`;
+- A todo app that looks like vaporwave
+- A tic tac toe game
+- A CSS Box shadow preview app`;
 
 export const questionPlaceholder = `Ask a question about the sketch
 
