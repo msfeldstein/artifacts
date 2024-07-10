@@ -60,22 +60,22 @@ export default function P5Editor() {
     });
   }
 
-  useEffect(() => {
-    if (!lastUpdatedCharacterValue) return;
-    const start = findLineAndColumn(currentSketch, lastUpdatedCharacterValue);
-    const end = findLineAndColumn(
-      currentSketch,
-      lastUpdatedCharacterValue - 10
-    );
-    const selection = {
-      startColumn: Math.max(0, start.column),
-      startLineNumber: Math.max(0, start.line),
-      endColumn: Math.max(0, end.column),
-      endLineNumber: Math.max(0, end.line),
-    };
-    console.log("Setting selection", selection);
-    editorRef.current?.setSelection(selection);
-  }, [lastUpdatedCharacterValue, currentSketch]);
+  // useEffect(() => {
+  //   if (!lastUpdatedCharacterValue) return;
+  //   const start = findLineAndColumn(currentSketch, lastUpdatedCharacterValue);
+  //   const end = findLineAndColumn(
+  //     currentSketch,
+  //     lastUpdatedCharacterValue - 10
+  //   );
+  //   const selection = {
+  //     startColumn: Math.max(0, start.column),
+  //     startLineNumber: Math.max(0, start.line),
+  //     endColumn: Math.max(0, end.column),
+  //     endLineNumber: Math.max(0, end.line),
+  //   };
+  //   console.log("Setting selection", selection);
+  //   editorRef.current?.setSelection(selection);
+  // }, [lastUpdatedCharacterValue, currentSketch]);
 
   return (
     <div className="EditorContainer">

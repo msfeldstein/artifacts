@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamic React Component Renderer</title>
+    <title>Advanced Dynamic React Component Renderer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
@@ -48,7 +48,14 @@
                         document.getElementById('root')
                     );
                     `,
-            { presets: ["react"] }
+            {
+              presets: ["react", "stage-2"],
+              plugins: [
+                "transform-object-rest-spread",
+                "transform-class-properties",
+                "transform-async-to-generator",
+              ],
+            }
           ).code;
 
           // Evaluate the transformed code
