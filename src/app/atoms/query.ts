@@ -16,12 +16,25 @@ export default async function query(currentSketch: string, query: string) {
 
   const prompt =
     preludeGenerate + "[BEGIN]\n" + currentSketch + "\n[END]\n\n" + query;
-  const streamResp = await stream(prompt);
-  console.log({ streamResp });
+  const response = await fetch("/api/ai", {
+    method: "POST",
+    body: JSON.stringify({ prompt }),
+  });
+  const data = response.body;
+  if (!data) {
+    return;
+  }
+  const reader = data.getReader();
+  const decoder = new TextDecoder();
+  let done = false;
+
   let stringBuilder = "";
   let newSketch = currentSketch;
-  for await (let data of readStreamableValue(streamResp.output)) {
-    stringBuilder = stringBuilder + data;
+  while (!done) {
+    const { value, done: doneReading } = await reader.read();
+    done = doneReading;
+    const chunkValue = decoder.decode(value);
+    stringBuilder = stringBuilder + chunkValue;
     const result = stringBuilder
       .replaceAll("[BEGIN]", "")
       .replaceAll("[END]", "")
@@ -31,7 +44,6 @@ export default async function query(currentSketch: string, query: string) {
     store.set(currentSketchAtom, newSketch);
   }
 
-  // store.set(currentSketchAtom, result);
   store.set(lastUpdatedCharacter, null);
   store.set(loadingAtom, false);
 }

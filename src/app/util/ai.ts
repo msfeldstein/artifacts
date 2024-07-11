@@ -1,4 +1,9 @@
 "use server";
+
+export const config = {
+  runtime: "edge",
+};
+
 import { generateObject, generateText, streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { anthropic } from "@ai-sdk/anthropic";
