@@ -28,6 +28,22 @@
         }
       }
 
+      // Improved error handling function
+      function handleError(error, errorInfo) {
+        console.error("Caught an error:", { error, errorInfo });
+        window.parent.postMessage({ p5Error: error });
+        const errorMessage = `${error.name}: ${error.message}`;
+        const errorStack = error.stack
+          ? `\n\nStack trace:\n${error.stack}`
+          : "";
+        document.getElementById("root").innerHTML = `
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Error rendering components:</strong>
+                    <pre class="mt-2 text-sm">${errorMessage}${errorStack}</pre>
+                </div>
+            `;
+      }
+
       // Get the component definitions from the query parameter
       const componentDefinitions = getQueryParam("components");
 
@@ -41,9 +57,35 @@
           const transformedCode = Babel.transform(
             `
                     ${decodedDefinitions}
+                    
+                    class ErrorBoundary extends React.Component {
+                        constructor(props) {
+                            super(props);
+                            this.state = { hasError: false, error: null, errorInfo: null };
+                        }
+                    
+                        static getDerivedStateFromError(error) {
+                            return { hasError: true };
+                        }
+                    
+                        componentDidCatch(error, errorInfo) {
+                            this.setState({ error, errorInfo });
+                            handleError(error, errorInfo);
+                        }
+                    
+                        render() {
+                            if (this.state.hasError) {
+                                return null; // Error already displayed by handleError
+                            }
+                            return this.props.children;
+                        }
+                    }
+
                     ReactDOM.render(
                         <React.StrictMode>
-                            <App />
+                            <ErrorBoundary>
+                                <App />
+                            </ErrorBoundary>
                         </React.StrictMode>,
                         document.getElementById('root')
                     );
@@ -58,18 +100,30 @@
             }
           ).code;
 
-          // Evaluate the transformed code
-          eval(transformedCode);
+          // Wrap the evaluation in a try-catch block
+          try {
+            eval(transformedCode);
+          } catch (error) {
+            handleError(error);
+          }
         } catch (error) {
-          console.error("Error rendering components:", error);
-          document.getElementById(
-            "root"
-          ).innerHTML = `<p>Error rendering components: ${error.message}</p>`;
+          handleError(error);
         }
       } else {
         document.getElementById("root").innerHTML =
           "<p>No component definitions provided in the query parameter.</p>";
       }
+
+      // Add a global error handler
+      window.onerror = function (message, source, lineno, colno, error) {
+        handleError(error || new Error(message));
+        return true; // Prevent the firing of the default event handler
+      };
+
+      // Add an unhandled promise rejection handler
+      window.addEventListener("unhandledrejection", function (event) {
+        handleError(event.reason);
+      });
     </script>
   </body>
 </html>
